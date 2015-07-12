@@ -1,13 +1,13 @@
-from TarnhelmAuth.models import AnonymousUser, RegisteredUser, gen_uid
+from TarnhelmAuth.models import LoginToken, RegisteredUser, gen_uid
 
 class User:
-    def __init__(self, uid, nick=None, admin=False):
+    def __init__(self, uid, name=None, admin=False):
         self.uid = uid;
-        self.nick = nick;
+        self.name = name;
         self.admin = False;
     
     def is_anonymous(self):
-        return (self.nick is None) or self.admin;
+        return (self.name is None) or self.admin;
 
 class InvalidPasswordException(Exception):
     def __init__(self, value):
@@ -16,7 +16,10 @@ class InvalidPasswordException(Exception):
         return repr(self.value);
 
 def anonymous_login(request):
-    request.session["auth"] = User(gen_uid())
+    login = LoginToken(is_anonymous = True);
+    login.full_clean();
+    login.save();
+    request.session["lt"] = login.id;
 
 def registered_login(request, username, password):
     """
@@ -31,10 +34,27 @@ def registered_login(request, username, password):
         RegisteredUser.DoesNotExist:    If the specified username could not be found
         InvalidPasswordException:       If the password provides is invalid
     """
-    user = RegisteredUser.objects.get(nick=username);
+    user = RegisteredUser.objects.get(name=username);
         
     if user.verify_password(password):
-        request.session["auth"] = User(user.uid, user.nick, user.admin);
+        login = LoginToken(uid = user.uid, is_anonymous = False);
+        login.full_clean();
+        login.save();
+        request.session["lt"] = login.id;
     else:
         raise InvalidPasswordException("Invalid Password for " + user.name);
-        
+
+def register_user(username, password, is_admin=False):
+    """
+    Creates a new user with the specified username and password
+    
+    Params:
+        username:   The name of the user
+        password:   The password of the user
+        is_admin:   True if the specified user is an administrator
+    
+    """
+    user = RegisteredUser.create(username, password);
+    user.is_admin = is_admin;
+    user.full_clean();
+    user.save();

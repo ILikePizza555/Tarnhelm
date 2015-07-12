@@ -32,6 +32,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'TarnhelmAuth.middleware.TarnhelmAuthMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
