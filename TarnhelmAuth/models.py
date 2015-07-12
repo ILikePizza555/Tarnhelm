@@ -11,23 +11,19 @@ def gen_uid():
 
 #Models
 class RegisteredUser(models.Model):
-    '''
+    """
     Describes a registered user.
-    '''
-    #Current UID
+    """
     uid = models.CharField(max_length=40, blank=False, unique=True, default=gen_uid);
-    #Previous UIDs
-    p1_uid = models.CharField(max_length=40);
-    p2_uid = models.CharField(max_length=40);
-    p3_uid = models.CharField(max_length=40);
-    
-    #Current nickname
     nick = models.CharField(max_length=settings.TARNHELM_USERNAME_LENGTH, unique=True);
-    #Previous nicknames
-    p1_name = models.TextField();
-    p2_name = models.TextField();
-    p3_name = models.TextField();
+    password_hash = models.CharField(max_length=40);
+    password_salt = models.CharField(max_length=6);
     
     #Misceleneous info
     rank = models.PositiveIntegerField(default=0);
     admin = models.BooleanField(default=False);
+    
+    def verify_password(self, password):
+        if(hashlib.sha1(password + self.password_salt).hexdigest == self.password_hash) :
+            return True
+        return False
