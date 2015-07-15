@@ -15,3 +15,5 @@ class TarnhelmAuthMiddleware():
                 #A little bit more work
                 r_user = RegisteredUser.objects.get(uid=token.uid);
                 request.user = User(uid=r_user.uid, name = r_user.name, admin=r_user.admin);
+        else:
+            request.user = None;

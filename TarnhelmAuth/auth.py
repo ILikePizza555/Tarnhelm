@@ -23,7 +23,7 @@ def anonymous_login(request):
 
 def registered_login(request, username, password):
     """
-    Logins in a user with the specified username and password.
+    Logins in a user with the specified username and password. If the login succedes, a user object will be available in request.user. 
     
     Params:
         request:    HTTPRequest object

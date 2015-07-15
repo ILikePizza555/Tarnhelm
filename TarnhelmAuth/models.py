@@ -5,6 +5,9 @@ import os
 
 #helper functions
 def gen_uid():
+    """
+    Generates a random user id
+    """
     m = hashlib.sha1();
     m.update(os.urandom(5));
     return m.hexdigest();
@@ -35,7 +38,7 @@ class RegisteredUser(models.Model):
         return cls(name = username, password_salt = salt, password_hash = hashlib.sha1(password + salt).hexdigest());
         
     def __unicode__(self):
-        return "User [" + self.name + "]: UID: " + self.uid + " PH: " + self.password_hash + " SALT: " + self.password_salt;
+        return "User [" + self.name + "]: UID: " + self.uid;
 
 class LoginToken(models.Model):
     """
